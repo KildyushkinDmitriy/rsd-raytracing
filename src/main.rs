@@ -1,23 +1,23 @@
 extern crate clap;
 extern crate image;
 
+use clap::Clap;
 use image::{ImageBuffer, ImageResult, RgbImage};
-use std::io::Write;
 
-const IMAGE_WIDTH: u32 = 256;
-const IMAGE_HEIGHT: u32 = 256;
+#[derive(Clap)]
+#[clap(version = "1.0", about = "RTX on CPU!")]
+struct Opts {
+    #[clap(long)]
+    image_lib_format: Option<String>,
+}
 
 fn main() -> ImageResult<()> {
-    let args = clap::App::new("Rust saber div Raytracing")
-        .version("1.0")
-        .about("RTX on CPU!")
-        .arg("--image-lib-format=[FORMAT] 'use image lib with chosen image format'")
-        .get_matches();
+    let opts: Opts = Opts::parse();
 
-    match args.value_of("image-lib-format") {
+    match opts.image_lib_format {
         Some(img_format) => {
             println!("writing image in {} format", img_format);
-            write_image(img_format)
+            write_image(&img_format)
         }
         None => {
             print_ppm_image();
@@ -25,6 +25,9 @@ fn main() -> ImageResult<()> {
         }
     }
 }
+
+const IMAGE_WIDTH: u32 = 256;
+const IMAGE_HEIGHT: u32 = 256;
 
 fn print_ppm_image() {
     println!("P3\n{} {}\n255", IMAGE_WIDTH, IMAGE_HEIGHT);
