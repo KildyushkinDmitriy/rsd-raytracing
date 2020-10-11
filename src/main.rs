@@ -1,13 +1,22 @@
+extern crate image;
+
+use image::{ImageBuffer, RgbImage};
+
+const IMAGE_WIDTH: u32 = 256;
+const IMAGE_HEIGHT: u32 = 256;
+
 fn main() {
-    let image_width = 256;
-    let image_height = 256;
+    // print_ppm_image();
+    write_bmp_image();
+}
 
-    println!("P3\n{} {}\n255", image_width, image_height);
+fn print_ppm_image() {
+    println!("P3\n{} {}\n255", IMAGE_WIDTH, IMAGE_HEIGHT);
 
-    for y in (0..image_height).rev() {
-        for x in 0..image_width {
-            let r = (x as f64) / ((image_width - 1) as f64);
-            let g = (y as f64) / ((image_height - 1) as f64);
+    for y in (0..IMAGE_HEIGHT).rev() {
+        for x in 0..IMAGE_WIDTH {
+            let r = (x as f64) / ((IMAGE_WIDTH - 1) as f64);
+            let g = (y as f64) / ((IMAGE_HEIGHT - 1) as f64);
             let b = 0.25;
 
             let multiplier = 255.999;
@@ -18,4 +27,21 @@ fn main() {
             println!("{} {} {}", ir, ig, ib);
         }
     }
+}
+
+fn write_bmp_image() {
+    let img: RgbImage = ImageBuffer::from_fn(IMAGE_WIDTH, IMAGE_HEIGHT, |x, y| {
+        let r = (x as f64) / ((IMAGE_WIDTH - 1) as f64);
+        let g = ((IMAGE_HEIGHT - y) as f64) / ((IMAGE_HEIGHT - 1) as f64);
+        let b = 0.25;
+
+        let multiplier = 255.999;
+        let ir = (multiplier * r) as u8;
+        let ig = (multiplier * g) as u8;
+        let ib = (multiplier * b) as u8;
+
+        image::Rgb([ir, ig, ib])
+    });
+
+    img.save("img.bmp").unwrap();
 }
