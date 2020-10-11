@@ -1,13 +1,17 @@
 extern crate image;
 
 use image::{ImageBuffer, RgbImage};
+use std::env;
 
 const IMAGE_WIDTH: u32 = 256;
 const IMAGE_HEIGHT: u32 = 256;
 
 fn main() {
-    // print_ppm_image();
-    write_bmp_image();
+    if std::env::args().find(|str| str == "--bmp").is_some() {
+        write_bmp_image();
+    } else {
+        print_ppm_image();
+    }
 }
 
 fn print_ppm_image() {
