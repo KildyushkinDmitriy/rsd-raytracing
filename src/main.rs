@@ -1,16 +1,24 @@
+extern crate clap;
 extern crate image;
 
-use image::{ImageBuffer, RgbImage};
-use std::env;
+use image::{ImageBuffer, ImageResult, RgbImage};
 
 const IMAGE_WIDTH: u32 = 256;
 const IMAGE_HEIGHT: u32 = 256;
 
-fn main() {
-    if std::env::args().find(|str| str == "--bmp").is_some() {
-        write_bmp_image();
+fn main() -> ImageResult<()> {
+    let args = clap::App::new("Rust saber div Raytracing")
+        .version("1.0")
+        .about("RTX on CPU!")
+        .arg("--image-lib-format=[FORMAT] 'use image lib with chosen image format'")
+        .get_matches();
+
+    if let Some(img_format) = args.value_of("image-lib-format") {
+        println!("writing image in {} format", img_format);
+        write_image(img_format)
     } else {
         print_ppm_image();
+        Ok(())
     }
 }
 
@@ -33,7 +41,7 @@ fn print_ppm_image() {
     }
 }
 
-fn write_bmp_image() {
+fn write_image(img_extension: &str) -> ImageResult<()> {
     let img: RgbImage = ImageBuffer::from_fn(IMAGE_WIDTH, IMAGE_HEIGHT, |x, y| {
         let r = (x as f64) / ((IMAGE_WIDTH - 1) as f64);
         let g = ((IMAGE_HEIGHT - y) as f64) / ((IMAGE_HEIGHT - 1) as f64);
@@ -47,5 +55,5 @@ fn write_bmp_image() {
         image::Rgb([ir, ig, ib])
     });
 
-    img.save("img.bmp").unwrap();
+    img.save(format!("img.{}", img_extension))
 }
